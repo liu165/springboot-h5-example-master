@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看表信息列表</title>
+    <meta charset="UTF-8">
+    <title>h5 example</title>
+    <script src="/static/vue-2.6.11.js"></script>
+  <!-- 引入样式 -->
+   <link rel="stylesheet" href="/static/element-ui-2.7.2/index.css">
+  <!-- 引入组件库 -->
+    <script src="/static/element-ui-2.7.2/index.js"></script>
+  <!-- 引入axios -->
+    <script src="/static/axios.min.js"></script>
+</head>
+<body>
+
+    <div id="app">
+        <el-container>
+<!--            <el-header>test</el-header>-->
+            <el-main>
+                <el-table
+                        :data="tableData"
+                        style="width: 100%">
+                    <el-table-column
+                            prop="createDate"
+                            label="日期"
+                            sortable
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="name"
+                            label="姓名"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="age"
+                            label="地址">
+                    </el-table-column>
+                </el-table>
+                <el-button type="text" @click="open">点击打开 Message Box</el-button>
+                <el-button type="text" @click="onSubmit">加载数据 Message Box</el-button>
+            </el-main>
+        </el-container>
+    </div>
+
+
+</template>
+
+
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message:"ghfgfgf",
+            tableData: [{}]
+        },
+        methods:{
+
+            open() {
+                this.$alert(this.$data.message, '标题名称', {
+                    confirmButtonText: '确定',
+                    callback: action => {
+                        this.$message({
+                            type: 'info',
+                            message: 'action: '+this.$data.tableData
+                        });
+                    }
+                });
+        },
+            onSubmit() {
+                console.log("re:",this.$data.tableData)
+                var arraydata= this.$data.tableData
+                axios.post('/user/userList', '')
+                    .then(function (response) {
+                        var resp = response.data;
+                        if (resp.status !== 200) { //请求失败
+                            app.$message({
+                                message: resp.message || 'Error',
+                                type: 'error',
+                                duration: 5 * 1000
+                            })
+                        } else { //请求成功
+                            //JSON.stringify
+                            console.log("re:",resp)
+                            app.$message({
+                                message:  'Error',
+                                type: 'error',
+                                duration: 5 * 1000
+                            })
+                            var temp = resp.content
+                            for(var i=0;i<temp.length;i++){
+                                let temp2 = {}
+                                temp2.createDate=temp[i].createDate
+                                temp2.name=temp[i].name
+                                temp2.age=temp[i].age
+                                console.log("re:",temp2)
+
+                                arraydata.unshift(temp2)
+                            }
+                            // this.tableData=resp.content
+                            // this.tableData = resp.data.content
+                            // app.$message({
+                            //     message: resp.message || 'Success',
+                            //     type: 'success',
+                            //     duration: 1 * 1000,
+                            //     onClose: function () {
+                            //         location.reload();//成功则刷新页面以便增加另外的人员
+                            //     }
+                            // });
+                        }
+                    })
+            }
+    },onload: {
+
+        }
+    });
+</script>
+</html>
